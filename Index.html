@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Rest Studio | Mobile Fasting Challenge</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #f4f9f9;
+            --text-color: #2d3436;
+            --card-bg: #ffffff;
+            --primary-color: #7f9c96; /* Sage Green */
+            --accent-color: #e63946;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --primary-color: #4a7c75;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            padding: 40px 0 20px;
+            position: relative;
+        }
+
+        h1 { margin: 0; font-weight: 300; letter-spacing: 2px; }
+        .subtitle { font-size: 0.9em; opacity: 0.7; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* DARK MODE TOGGLE */
+        .theme-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        /* DASHBOARD GRID LAYOUT */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* CARD STYLES */
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .card:hover { transform: translateY(-2px); }
+        .card h3 { margin-top: 0; color: var(--primary-color); font-size: 1.2rem; }
+
+        /* BUTTONS */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        button.reset { background-color: var(--accent-color); font-size: 0.8rem; padding: 5px 15px; }
+
+        /* FEATURE SPECIFIC STYLES */
+        .timer-display { font-size: 2.5rem; font-weight: bold; margin: 15px 0; font-variant-numeric: tabular-nums; }
+        
+        /* Breath Pacer */
+        .breathing-circle {
+            width: 80px; height: 80px;
+            background-color: #a8dadc;
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: breathe 8s infinite ease-in-out;
+        }
+        @keyframes breathe {
+            0% { transform: scale(1); opacity: 0.6; }
+            40% { transform: scale(1.6); opacity: 1; }
+            60% { transform: scale(1.6); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+
+        /* Hydration Bar */
+        .water-track { background: #ddd; height: 15px; border-radius: 10px; width: 100%; margin: 10px 0; overflow: hidden; }
+        .water-fill { height: 100%; width: 0%; background: #4cc9f0; transition: width 0.3s; }
+
+        /* Inputs */
+        textarea, input {
+            width: 80%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+            background: var(--bg-color); color: var(--text-color); margin-bottom: 10px;
+        }
+        
+        /* Moods */
+        .mood-btn { background: none; font-size: 1.8rem; padding: 5px; color: var(--text-color); }
+        
+        /* Details/Accordion */
+        details { text-align: left; background: var(--bg-color); padding: 10px; border-radius: 8px; margin-bottom: 5px; }
+        summary { cursor: pointer; font-weight: bold; }
+        details p { font-size: 0.9rem; margin: 10px 0 0; line-height: 1.5; }
+
+        /* Footer */
+        footer { text-align: center; margin-top: 50px; opacity: 0.6; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button onclick="toggleTheme()" class="theme-btn" id="themeBtn">🌙</button>
+        <h1>Life Rest Studio</h1>
+        <div class="subtitle">The Mobile Fasting Challenge</div>
+    </header>
+
+    <div class="dashboard">
+
+        <div class="card" style="grid-column: span 1; border: 2px solid var(--primary-color);">
+            <h3>📵 Mobile Fasting Timer</h3>
+            <p>Time spent disconnected:</p>
+            <div id="timerDisplay" class="timer-display">00:00:00</div>
+            <button onclick="startDetox()">Start Fast</button>
+            <button onclick="stopDetox()" class="reset">I slipped up</button>
+        </div>
+
+        <div class="card">
+            <h3>🔥 Daily Streak</h3>
+            <div id="streakCount" style="font-size: 2rem; font-weight: bold; margin: 10px 0;">0 Days</div>
+            <p style="font-size: 0.8rem;">Completed your fast today?</p>
+            <button onclick="incrementStreak()">Yes, I did!</button>
+            <br><br>
+            <button onclick="resetStreak()" class="reset" style="background:none; color:grey; border:1px solid grey;">Reset</button>
+        </div>
+
+        <div class="card">
+            <h3>📝 Intention Journal</h3>
+            <p>Why are you disconnecting?</p>
+            <textarea id="journalInput" rows="3" placeholder="I want to focus on..."></textarea>
+            <button onclick="saveJournal()">Save</button>
+        </div>
+
+        <div class="card">
+            <h3>🌬️ 4-7-8 Breath Pacer</h3>
+            <div class="breathing-circle"></div>
+            <p id="breathText">Follow the circle...</p>
+        </div>
+
+        <div class="card">
+            <h3>✨ Dopamine Menu</h3>
+            <p>Bored? Don't scroll. Try this:</p>
+            <div id="activityDisplay" style="font-weight:bold; min-height: 50px; display:flex; align-items:center; justify-content:center; color:var(--primary-color);">
+                Click for an idea...
+            </div>
+            <button onclick="getActivity()">Gimme something to do</button>
+        </div>
+
+        <div class="card">
+            <h3>💧 Hydration</h3>
+            <div class="water-track"><div id="waterBar" class="water-fill"></div></div>
+            <span id="waterCount" style="font-weight:bold; font-size:1.2rem;">0</span> / 8 Cups
+            <br>
+            <button onclick="addWater()">+ Drink</button>
+            <button onclick="resetWater()" class="reset">Reset</button>
+        </div>
+
+        <div class="card">
+            <h3>📉 The Cost of Scrolling</h3>
+            <input type="number" id="screenHours" placeholder="Hours/day" style="width: 80px; text-align: center;">
+            <br>
+            <button onclick="calculateCost()">Calculate Loss</button>
+            <p id="costResult" style="font-size: 0.9rem; color: var(--accent-color); font-weight: bold;"></p>
+        </div>
+
+        <div class="card">
+            <h3>📊 Mood Check</h3>
+            <p>How do you feel after resting?</p>
+            <div>
+                <button class="mood-btn" onclick="logMood('😫')">😫</button>
+                <button class="mood-btn" onclick="logMood('😐')">😐</button>
+                <button class="mood-btn" onclick="logMood('🙂')">🙂</button>
+                <button class="mood-btn" onclick="logMood('🤩')">🤩</button>
+            </div>
+            <p style="font-size:0.8rem; margin-top:10px;">History:</p>
+            <div id="moodHistory" style="letter-spacing: 5px;"></div>
+        </div>
+
+        <div class="card">
+            <h3>💤 Power Nap</h3>
+            <div id="napTimer" style="font-size: 2rem; font-weight: bold; margin: 10px 0;">20:00</div>
+            <button onclick="startNap()">Start 20m Timer</button>
+        </div>
+
+        <div class="card">
+            <h3>📖 Guided Resets</h3>
+            <details>
+                <summary>5-4-3-2-1 Grounding</summary>
+                <p>1. See 5 things.<br>2. Touch 4 things.<br>3. Hear 3 things.<br>4. Smell 2 things.<br>5. Taste 1 thing.</p>
+            </details>
+            <details>
+                <summary>Box Breathing</summary>
+                <p>Inhale (4s) -> Hold (4s) -> Exhale (4s) -> Hold (4s). Repeat.</p>
+            </details>
+        </div>
+
+        <div class="card">
+            <h3>💡 Daily Wisdom</h3>
+            <p id="quoteDisplay" style="font-style: italic;">"Rest is not a reward, it's a requirement."</p>
+            <button onclick="newQuote()" style="font-size: 0.8rem;">New Quote</button>
+        </div>
+
+        <div class="card">
+            <h3>🌧️ Soundscape</h3>
+            <p>Instant Rain</p>
+            <audio controls loop style="width: 100%; max-width: 200px;">
+                <source src="https://cdn.pixabay.com/download/audio/2022/02/07/audio_6590b07779.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Built for the Mobile Fasting Challenge</p>
+    </footer>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+
+        // 1. THEME TOGGLE
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            
+            if (isDark) {
+                body.setAttribute('data-theme', 'light');
+                btn.innerText = "🌙";
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.innerText = "☀️";
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        if(localStorage.getItem('theme') === 'dark') { toggleTheme(); }
+
+        // 2. MOBILE FASTING TIMER (Works even if browser closes)
+        let detoxInterval;
+        function startDetox() {
+            localStorage.setItem('detoxStart', Date.now());
+            detoxInterval = setInterval(updateTimer, 1000);
+            updateTimer(); 
+        }
+        function stopDetox() {
+            clearInterval(detoxInterval);
+            localStorage.removeItem('detoxStart');
+            document.getElementById('timerDisplay').innerText = "00:00:00";
+        }
+        function updateTimer() {
+            const storedStart = localStorage.getItem('detoxStart');
+            if (storedStart) {
+                const diff = Date.now() - parseInt(storedStart);
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('timerDisplay').innerText = 
+                    `${h<10?'0'+h:h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+            }
+        }
+        if(localStorage.getItem('detoxStart')) { detoxInterval = setInterval(updateTimer, 1000); }
+
+        // 3. STREAK TRACKER
+        let streak = parseInt(localStorage.getItem('streak')) || 0;
+        document.getElementById('streakCount').innerText = streak + " Days";
+        function incrementStreak() {
+            streak++;
+            localStorage.setItem('streak', streak);
+            document.getElementById('streakCount').innerText = streak + " Days";
+            confettiEffect(); // Simple visual feedback
+        }
+        function resetStreak() {
+            if(confirm("Reset streak to 0?")) {
+                streak = 0;
+                localStorage.setItem('streak', 0);
+                document.getElementById('streakCount').innerText = "0 Days";
+            }
+        }
+
+        // 4. INTENTION JOURNAL
+        document.getElementById('journalInput').value = localStorage.getItem('journal') || "";
+        function saveJournal() {
+            localStorage.setItem('journal', document.getElementById('journalInput').value);
+            alert("Intention saved.");
+        }
+
+        // 5. BREATH PACER TEXT
+        setInterval(() => {
+            const t = document.getElementById('breathText');
+            setTimeout(() => t.innerText = "Breathe In...", 0);
+            setTimeout(() => t.innerText = "Hold...", 3200);
+            setTimeout(() => t.innerText = "Breathe Out...", 4800);
+        }, 8000);
+
+        // 6. DOPAMINE MENU
+        const activities = ["Drink water 💧", "Stretch 2 mins 🧘", "Look at the sky ☁️", "Clean a drawer 🧹", "Read a page 📖", "Doodle ✏️", "10 Jumping Jacks ⚡"];
+        function getActivity() {
+            document.getElementById('activityDisplay').innerText = activities[Math.floor(Math.random() * activities.length)];
+        }
+
+        // 7. HYDRATION
+        let water = parseInt(localStorage.getItem('water')) || 0;
+        updateWaterUI();
+        function addWater() { if(water<8) { water++; saveWater(); } }
+        function resetWater() { water = 0; saveWater(); }
+        function saveWater() { localStorage.setItem('water', water); updateWaterUI(); }
+        function updateWaterUI() {
+            document.getElementById('waterCount').innerText = water;
+            document.getElementById('waterBar').style.width = (water/8*100) + "%";
+        }
+
+        // 8. COST CALCULATOR
+        function calculateCost() {
+            const h = document.getElementById('screenHours').value;
+            if(h) {
+                const daysLost = Math.floor((h * 365) / 24);
+                document.getElementById('costResult').innerText = `You lose ${daysLost} full days every year to your phone.`;
+            }
+        }
+
+        // 9. MOOD TRACKER
+        let moods = JSON.parse(localStorage.getItem('moods')) || [];
+        document.getElementById('moodHistory').innerText = moods.join(" ");
+        function logMood(emoji) {
+            moods.push(emoji);
+            if(moods.length > 5) moods.shift();
+            localStorage.setItem('moods', JSON.stringify(moods));
+            document.getElementById('moodHistory').innerText = moods.join(" ");
+        }
+
+        // 10. POWER NAP
+        let napInterval;
+        function startNap() {
+            let dur = 20 * 60;
+            clearInterval(napInterval);
+            napInterval = setInterval(() => {
+                let m = Math.floor(dur / 60);
+                let s = dur % 60;
+                document.getElementById('napTimer').innerText = `${m}:${s<10?'0'+s:s}`;
+                if (--dur < 0) { clearInterval(napInterval); alert("Nap complete!"); }
+            }, 1000);
+        }
+
+        // 11. QUOTES
+        const quotes = ["Disconnect to Reconnect.", "Almost everything will work again if you unplug it... including you.", "Rest is productive.", "Peace begins when expectation ends."];
+        function newQuote() {
+            document.getElementById('quoteDisplay').innerText = '"' + quotes[Math.floor(Math.random() * quotes.length)] + '"';
+        }
+
+        // Helper for feedback
+        function confettiEffect() {
+            const btn = document.querySelector('button');
+            btn.innerText = "Great Job! 🎉";
+            setTimeout(() => btn.innerText = "Yes, I did!", 2000);
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Affordable and professional web design">
+	  <meta name="keywords" content="web design, affordable web design, professional web design">
+  	<meta name="author" content="Brad Traversy">
+    <title>Acme Web Deisgn | About</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="icon" href="img/favicon.png">
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div id="branding">
+          <h1><span class="highlight">Acme</span> Web Design</h1>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li class="current"><a href="about.html">About</a></li>
+            <li><a href="services.html">Services</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section id="newsletter">
+      <div class="container">
+        <h1>Subscribe To Our Newsletter</h1>
+        <form>
+          <input type="email" placeholder="Enter Email..." required>
+          <button type="submit" class="button_1">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="main">
+      <div class="container">
+        <article id="main-col">
+          <h1 class="page-title">About Us</h1>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec varius auctor lacus nec feugiat. Phasellus sit amet ex ipsum. Praesent pharetra tincidunt tempor. Etiam velit eros, dapibus eget porta in, lacinia et magna. Nam eget eros non orci consectetur congue at ac augue. Proin eget arcu in enim feugiat ultricies. Curabitur maximus metus nec metus pretium viverra at et orci. Integer hendrerit ante ut placerat cursus.
+          </p>
+          <p class="dark">
+Aliquam eget pharetra diam. Nulla placerat lorem at turpis tempor, vel ultrices dui tincidunt. Proin quis egestas lorem. Mauris vehicula lectus odio, sit amet dictum justo feugiat a. Praesent id dictum lacus. Sed ullamcorper id erat ut dictum. Fusce porttitor lorem sapien, in aliquet sapien convallis et. Donec nec mauris nulla. Curabitur cursus semper odio, et hendrerit ante. Nunc at cursus ante. Maecenas gravida ligula ut efficitur suscipit. Nulla id turpis varius, pretium nunc sed, fermentum sem. Sed lacinia nunc non interdum pellentesque.
+          </p>
+        </article>
+
+        <aside id="sidebar">
+          <div class="dark">
+            <h3>What We Do</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec varius auctor lacus nec feugiat. Phasellus sit amet ex ipsum. Praesent pharetra tincidunt tempor. Etiam velit eros, dapibus eget porta in, lacinia et magna</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <p>Acme Web Deisgn, Copyright &copy; 2019</p>
+    </footer>
+  </body>
+</html>
