@@ -499,7 +499,520 @@
         function logMood(emoji) {
             moods.push(emoji);
             if(moods.length > 5) moods.shift();
+            localStorage.<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Reset Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- LUXURY CHARCOAL & SOFT GOLD THEME --- */
+        :root {
+            --bg-color: #121212;         /* Deep Charcoal */
+            --card-bg: #1C1C1C;          /* Card Background */
+            --text-main: #E0E0E0;        /* Soft White */
+            --gold-accent: #C5B358;      /* Matte Soft Gold */
+            --gold-dim: #8A7E45;         /* Muted Gold */
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --font-main: 'Outfit', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(to bottom, #161616, #121212);
+            border-bottom: 1px solid rgba(197, 179, 88, 0.1);
+        }
+
+        h1 { 
+            margin: 0; 
+            font-weight: 300; 
+            letter-spacing: 3px; 
+            color: var(--gold-accent); 
+            text-transform: uppercase;
+            font-size: 1.5rem;
+        }
+        
+        .subtitle { 
+            font-size: 0.75rem; 
+            opacity: 0.6; 
+            margin-top: 10px; 
+            letter-spacing: 4px; 
+            text-transform: uppercase; 
+            color: #fff;
+        }
+
+        /* --- SECTIONS --- */
+        .section-label {
+            text-align: center;
+            margin: 50px 0 20px;
+            font-size: 0.8rem;
+            color: var(--gold-accent);
+            opacity: 0.8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .section-label::before, .section-label::after {
+            content: "";
+            height: 1px;
+            width: 30px;
+            background: var(--gold-accent);
+            opacity: 0.3;
+            margin: 0 15px;
+        }
+
+        /* --- GRID LAYOUT --- */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- CARDS --- */
+        .card {
+            background-color: var(--card-bg);
+            padding: 30px 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover { 
+            transform: translateY(-4px); 
+            border-color: rgba(197, 179, 88, 0.3); 
+        }
+        
+        /* Gold Top Line */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+            opacity: 0.5;
+        }
+
+        .card h3 { 
+            margin-top: 0; 
+            color: var(--gold-accent); 
+            font-size: 1.1rem; 
+            font-weight: 400;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        
+        .card p { font-size: 0.9rem; opacity: 0.7; font-weight: 300; margin-bottom: 20px; }
+
+        /* --- TIMER STYLES --- */
+        .timer-dashboard {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .time-val {
+            font-size: 1.8rem;
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            min-width: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-variant-numeric: tabular-nums;
+        }
+        .colon { font-size: 1.8rem; padding-top: 5px; opacity: 0.5; color: var(--gold-dim); }
+
+        /* --- BUTTONS & INPUTS --- */
+        button {
+            background: linear-gradient(135deg, var(--gold-accent), var(--gold-dim));
+            color: #121212;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 6px; 
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            letter-spacing: 1px;
+            width: 100%;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+        
+        button:hover { opacity: 0.9; }
+        
+        button.reset { 
+            background: transparent; 
+            color: var(--text-main); 
+            border: 1px solid rgba(255,255,255,0.15); 
+            font-size: 0.7rem; 
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+        
+        /* Mood Buttons */
+        .mood-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.1); 
+            width: auto; margin: 5px; font-size: 1.5rem; padding: 10px;
+        }
+        .mood-btn:hover { background: rgba(255,255,255,0.05); border-color: var(--gold-accent); }
+
+        textarea, input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 6px;
+            border: none;
+            border-bottom: 2px solid #333;
+            background: rgba(0,0,0,0.2);
+            color: var(--gold-accent);
+            font-family: var(--font-main);
+            text-align: center;
+            font-weight: 400;
+        }
+        
+        input:focus, textarea:focus { outline: none; border-bottom-color: var(--gold-accent); }
+
+        /* --- VISUALS --- */
+        .eye-ball {
+            width: 12px; height: 12px;
+            background: var(--gold-accent);
+            border-radius: 50%;
+            margin: 20px auto;
+            box-shadow: 0 0 15px rgba(197, 179, 88, 0.4);
+            animation: gentleFloat 6s infinite ease-in-out;
+        }
+        @keyframes gentleFloat {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-25px, 0); }
+            50% { transform: translate(25px, 0); }
+            75% { transform: translate(0, -10px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .breath-circle {
+            width: 60px; height: 60px;
+            border: 1px solid var(--gold-accent);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: breatheAnim 8s infinite ease-in-out;
+        }
+        @keyframes breatheAnim {
+            0% { transform: scale(1); opacity: 0.3; }
+            40% { transform: scale(1.6); opacity: 0.9; border-width: 2px; }
+            60% { transform: scale(1.6); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        /* --- FOOTER --- */
+        footer { 
+            text-align: center; 
+            margin-top: 80px; 
+            padding: 40px 20px;
+            background-color: #0d0d0d;
+            border-top: 1px solid #1a1a1a;
+        }
+        footer p { margin: 5px 0; font-size: 0.75rem; color: #555; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Life Reset Studio</h1>
+        <div class="subtitle">Quality of Attention</div>
+    </header>
+
+    <div class="section-label">Phase 1: Disconnect</div>
+    
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>📵 Mobile Fasting</h3>
+            <p>Time Reclaimed</p>
+            <div class="timer-dashboard">
+                <div id="h-val" class="time-val">00</div><div class="colon">:</div>
+                <div id="m-val" class="time-val">00</div><div class="colon">:</div>
+                <div id="s-val" class="time-val">00</div>
+            </div>
+            <button onclick="startDetox()">Begin Fast</button>
+            <button onclick="stopDetox()" class="reset">End Session</button>
+        </div>
+
+        <div class="card">
+            <h3>📝 Intention</h3>
+            <p>I am clearing space for:</p>
+            <textarea id="journalInput" rows="2" placeholder="Silence, presence, rest..."></textarea>
+            <button onclick="saveJournal()">Save Intention</button>
+        </div>
+
+        <div class="card">
+            <h3>📉 Cost of Scrolling</h3>
+            <p>Daily Screen Time (Hours)</p>
+            <input type="number" id="screenHours" placeholder="e.g. 4">
+            <button onclick="calculateCost()">Calculate</button>
+            <p id="costResult" style="color: var(--gold-accent); font-weight: 400; margin-top: 15px; font-size: 0.9rem;"></p>
+        </div>
+
+    </div>
+
+    <div class="section-label">Phase 2: The Digital Gym</div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>👁️ Visual Rest</h3>
+            <p>Soften your gaze.</p>
+            <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                <div class="eye-ball"></div>
+            </div>
+            <p style="font-size: 0.8rem; margin-top: 5px;">Follow gently.</p>
+        </div>
+
+        <div class="card">
+            <h3>🧘 Posture Awareness</h3>
+            <div style="font-size: 2.2rem; margin: 15px 0; opacity: 0.8;">🦴</div>
+            <div style="font-size: 0.85rem; opacity: 0.7; line-height: 1.8;">
+                • Drop your shoulders<br>
+                • Unclench your jaw<br>
+                • Breathe into your spine
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🧠 Focus Window</h3>
+            <p>25 Minutes of Presence</p>
+            <div class="timer-dashboard">
+                <div id="p-m" class="time-val">25</div><div class="colon">:</div>
+                <div id="p-s" class="time-val">00</div>
+            </div>
+            <button onclick="startPomodoro()">Open Window</button>
+        </div>
+
+    </div>
+
+    <div class="section-label">Phase 3: Restoration</div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>✨ Dopamine Menu</h3>
+            <p>Bored? Try this instead of scrolling:</p>
+            <div id="activityDisplay" style="min-height: 50px; display:flex; align-items:center; justify-content:center; color:var(--gold-accent); font-weight:bold; font-style:italic;">
+                Click for an idea...
+            </div>
+            <button onclick="getActivity()">Get Idea</button>
+        </div>
+
+        <div class="card">
+            <h3>💤 Power Nap</h3>
+            <p>20 Minute Reset</p>
+            <div id="napTimer" style="font-size: 2rem; margin: 10px 0; color: #fff;">20:00</div>
+            <button onclick="startNap()">Start Nap</button>
+        </div>
+
+        <div class="card">
+            <h3>💧 Hydration</h3>
+            <p style="font-size: 1.5rem; margin: 20px 0; color: var(--gold-accent);">
+                <span id="waterCount">0</span> Cups
+            </p>
+            <button onclick="addWater()">+ Drink</button>
+            <button onclick="resetWater()" class="reset">Reset</button>
+        </div>
+
+        <div class="card">
+            <h3>🌬️ One Calm Breath</h3>
+            <p>Inhale... Exhale...</p>
+            <div class="breath-circle"></div>
+        </div>
+
+    </div>
+
+    <div class="section-label">Phase 4: Awareness</div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>🔥 Daily Promise</h3>
+            <div id="streakCount" style="font-size: 2rem; color: var(--gold-accent); margin: 10px 0;">0 Days</div>
+            <p>Kept your promise today?</p>
+            <button onclick="incrementStreak()">Log Day</button>
+            <button onclick="resetStreak()" class="reset">Reset</button>
+        </div>
+
+        <div class="card">
+            <h3>📊 Mood Check</h3>
+            <p>How do you feel after resting?</p>
+            <div>
+                <button class="mood-btn" onclick="logMood('😫')">😫</button>
+                <button class="mood-btn" onclick="logMood('😐')">😐</button>
+                <button class="mood-btn" onclick="logMood('🙂')">🙂</button>
+                <button class="mood-btn" onclick="logMood('🤩')">🤩</button>
+            </div>
+            <p style="font-size:0.8rem; margin-top:15px; opacity: 0.6;">History:</p>
+            <div id="moodHistory" style="letter-spacing: 5px; color: var(--gold-accent);"></div>
+        </div>
+
+        <div class="card">
+            <h3>💡 Daily Wisdom</h3>
+            <p id="quoteDisplay" style="font-style: italic; min-height: 60px;">"Rest is not a reward, it's a requirement."</p>
+            <button onclick="newQuote()" style="background: transparent; border: 1px solid rgba(255,255,255,0.1);">New Quote</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Life Reset Studio. All rights reserved.</p>
+        <p>Designed with intention for the Digital Wellbeing Community.</p>
+    </footer>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+
+        // 1. FASTING TIMER
+        let detoxInterval;
+        function startDetox() {
+            localStorage.setItem('detoxStart', Date.now());
+            if(detoxInterval) clearInterval(detoxInterval);
+            detoxInterval = setInterval(updateTimer, 1000);
+            updateTimer(); 
+        }
+        function stopDetox() {
+            clearInterval(detoxInterval);
+            localStorage.removeItem('detoxStart');
+            document.getElementById('h-val').innerText = "00";
+            document.getElementById('m-val').innerText = "00";
+            document.getElementById('s-val').innerText = "00";
+        }
+        function updateTimer() {
+            const storedStart = localStorage.getItem('detoxStart');
+            if (storedStart) {
+                const diff = Date.now() - parseInt(storedStart);
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('h-val').innerText = h < 10 ? '0'+h : h;
+                document.getElementById('m-val').innerText = m < 10 ? '0'+m : m;
+                document.getElementById('s-val').innerText = s < 10 ? '0'+s : s;
+            }
+        }
+        if(localStorage.getItem('detoxStart')) { detoxInterval = setInterval(updateTimer, 1000); }
+
+        // 2. JOURNAL
+        document.getElementById('journalInput').value = localStorage.getItem('journal') || "";
+        function saveJournal() {
+            localStorage.setItem('journal', document.getElementById('journalInput').value);
+            alert("Intention saved.");
+        }
+
+        // 3. COST CALCULATOR
+        function calculateCost() {
+            const h = document.getElementById('screenHours').value;
+            if(h) {
+                const daysLost = Math.floor((h * 365) / 24);
+                document.getElementById('costResult').innerText = "This equals " + daysLost + " full days spent elsewhere each year.";
+            }
+        }
+
+        // 4. FOCUS WINDOW (25m)
+        let pomodoroInterval;
+        function startPomodoro() {
+            let duration = 25 * 60; 
+            if(pomodoroInterval) clearInterval(pomodoroInterval);
+            pomodoroInterval = setInterval(() => {
+                let m = Math.floor(duration / 60);
+                let s = duration % 60;
+                document.getElementById('p-m').innerText = m < 10 ? '0'+m : m;
+                document.getElementById('p-s').innerText = s < 10 ? '0'+s : s;
+                if (--duration < 0) { clearInterval(pomodoroInterval); alert("Window closed."); }
+            }, 1000);
+        }
+
+        // 5. DOPAMINE MENU
+        const activities = ["Drink water 💧", "Stretch 2 mins 🧘", "Look at the sky ☁️", "Clean a drawer 🧹", "Read a page 📖", "Doodle ✏️", "10 Jumping Jacks ⚡"];
+        function getActivity() {
+            document.getElementById('activityDisplay').innerText = activities[Math.floor(Math.random() * activities.length)];
+        }
+
+        // 6. POWER NAP (20m)
+        let napInterval;
+        function startNap() {
+            let dur = 20 * 60;
+            clearInterval(napInterval);
+            napInterval = setInterval(() => {
+                let m = Math.floor(dur / 60);
+                let s = dur % 60;
+                document.getElementById('napTimer').innerText = `${m}:${s<10?'0'+s:s}`;
+                if (--dur < 0) { clearInterval(napInterval); alert("Nap complete."); }
+            }, 1000);
+        }
+
+        // 7. HYDRATION
+        let water = parseInt(localStorage.getItem('water')) || 0;
+        updateWaterUI();
+        function addWater() { if(water<20) { water++; saveWater(); } } 
+        function resetWater() { water = 0; saveWater(); }
+        function saveWater() { localStorage.setItem('water', water); updateWaterUI(); }
+        function updateWaterUI() { document.getElementById('waterCount').innerText = water; }
+
+        // 8. DAILY PROMISE (STREAK)
+        let streak = parseInt(localStorage.getItem('streak')) || 0;
+        document.getElementById('streakCount').innerText = streak + " Days";
+        function incrementStreak() {
+            streak++;
+            localStorage.setItem('streak', streak);
+            document.getElementById('streakCount').innerText = streak + " Days";
+        }
+        function resetStreak() {
+            streak = 0;
+            localStorage.setItem('streak', 0);
+            document.getElementById('streakCount').innerText = "0 Days";
+        }
+
+        // 9. MOOD CHECK
+        let moods = JSON.parse(localStorage.getItem('moods')) || [];
+        document.getElementById('moodHistory').innerText = moods.join(" ");
+        function logMood(emoji) {
+            moods.push(emoji);
+            if(moods.length > 5) moods.shift();
             localStorage.setItem('moods', JSON.stringify(moods));
+            document.getElementById('moodHistory').innerText = moods.join(" ");
+        }
+
+        // 10. QUOTES
+        const quotes = ["Disconnect to Reconnect.", "Almost everything will work again if you unplug it... including you.", "Rest is productive.", "Peace begins when expectation ends."];
+        function newQuote() {
+            document.getElementById('quoteDisplay').innerText = '"' + quotes[Math.floor(Math.random() * quotes.length)] + '"';
+        }
+    </script>
+</body>
+    </html>
+('moods', JSON.stringify(moods));
             document.getElementById('moodHistory').innerText = moods.join(" ");
         }
 
